@@ -3,18 +3,16 @@ const morgan = require('morgan');
 const colors = require('colors');
 const connectDB = require('./config/db')
 
+// Connect to detabase
+connectDB();
+// ROUTE FILES
+const bootcamps = require('./routes/bootcamps')
 
 // INITIATE EXPRESS APP VARIABLE
 const app = express();
+
 //Body parser
 app.use(express.json())
-
-
-// Connect to detabase
-connectDB();
-
-// ROUTE FILES
-const bootcamps = require('./routes/bootcamps')
 
 //MIDDLEWEARE
 // Dev logging Middleware
