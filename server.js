@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const colors = require('colors');
+const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db')
 
 // Connect to detabase
@@ -23,7 +24,7 @@ if(process.env.NODE_ENV === 'developement'){
 // Mount routers using app middlewear
 app.use('/api/v1/bootcamps', bootcamps);
 
-
+app.use(errorHandler);
 
 // LISTEN SERVER
  //const PORT = process.env.PORT || 5000;
