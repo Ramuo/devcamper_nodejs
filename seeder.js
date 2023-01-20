@@ -5,8 +5,6 @@ const colors = require('colors');
 const dotenv = require('dotenv');
 
 
-
-
 //Load env vars 
 dotenv.config({ path: './config/.env'});
 const MONGO_URI = process.env.MONGO_URI
