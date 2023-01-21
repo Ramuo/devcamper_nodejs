@@ -7,7 +7,8 @@ const connectDB = require('./config/db')
 // Connect to detabase
 connectDB();
 // ROUTE FILES
-const bootcamps = require('./routes/bootcamps')
+const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
 
 // INITIATE EXPRESS APP VARIABLE
 const app = express();
@@ -23,6 +24,7 @@ if(process.env.NODE_ENV === 'developement'){
 
 // Mount routers using app middlewear
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 app.use(errorHandler);
 
