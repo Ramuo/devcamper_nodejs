@@ -61,16 +61,24 @@ exports.createBootcamp = asyncHandler (async(req, res, next)=>{
 // @route   Put    /api/v1/bootcamps/:id
 // @acces          Private   
 exports.updateBootcamp = asyncHandler (async(req, res, next)=>{ 
-    const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
-    });
+    let bootcamp = await Bootcamp.findById(req.params.id, req.body);
     // check if it does't exist
     if(!bootcamp){
         return next(new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404));
     }
+
+    // Make sure user is bootcamp owner
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+        return next(new ErrorResponse(`User ${req.params.id} is not authorized to update this bootcamp`, 401));
+    }
+
+    bootcamp = await Bootcamp.findByOneAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true
+    });
+
     // if it exist
-    res.status(200).json({success: false, data: bootcamp});
+    res.status(200).json({success: true, data: bootcamp});
           
 });
 
@@ -86,10 +94,15 @@ exports.deleteBootcamp = asyncHandler(async(req, res, next)=>{
         return next(new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404));
     }
 
+    // Make sure user is bootcamp owner
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+        return next(new ErrorResponse(`User ${req.params.id} is not authorized to delete this bootcamp`, 401));
+    }
+
     bootcamp.remove();
 
     // if it exist
-    res.status(200).json({success: false, data: {} });
+    res.status(200).json({success: true, data: {} });
     
 });
 
@@ -134,6 +147,11 @@ exports.bootcampPhotoUpload = asyncHandler(async(req, res, next)=>{
     // check if it does't exist
     if(!bootcamp){
         return next(new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404));
+    }
+
+    // Make sure user is bootcamp owner
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+        return next(new ErrorResponse(`User ${req.params.id} is not authorized to update this bootcamp`, 401));
     }
 
     // let'us check if a file was uploaded
