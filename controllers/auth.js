@@ -5,9 +5,9 @@ const ErrorResponse = require('../utils/errorResponse');
 const sendEmail = require('../utils/sendEmail');
 
 
-// @desc            Rgister a user
-// @desc    POST     /api/v1/auth/register
-// @acces           Public 
+// @desc     Rgister a user
+// @route    POST /api/v1/auth/register
+// @acces    Public 
 exports.register = asyncHandler (async(req, res, next)=>{
    const {name, email, password, role} = req.body;
 
@@ -25,9 +25,9 @@ exports.register = asyncHandler (async(req, res, next)=>{
 });
 
 
-// @desc            login user
-// @desc    POST     /api/v1/auth/login
-// @acces           Public 
+// @desc     login user
+// @route    POST /api/v1/auth/login
+// @acces    Public 
 exports.login = asyncHandler (async(req, res, next)=>{
    const {email, password} = req.body;
 
@@ -57,12 +57,11 @@ exports.login = asyncHandler (async(req, res, next)=>{
 
 
 
-// @desc    Get      current logged in user
-// @desc    Get     /api/v1/auth/me
-// @acces           Private 
+// @desc    Get current logged in user
+// @route    Get /api/v1/auth/me
+// @acces    Private 
 exports.getMe = asyncHandler(async (req, res, next)=>{
    const user = await User.findById(req.user.id);
-
 
    res.status(200).json({
       success: true,
@@ -71,8 +70,47 @@ exports.getMe = asyncHandler(async (req, res, next)=>{
 });
 
 
+// @desc   Update user details
+// @route  Put /api/v1/auth/updatedetails
+// @acces  Private 
+exports.updateDetails = asyncHandler(async (req, res, next)=>{
+   const fieldsToUpdate = {
+      name: req.body.name,
+      email: req.body.email
+   }
+
+   const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+      new: true,
+      runValidators: true
+   });
+
+   res.status(200).json({
+      success: true,
+      data: user
+   });
+});
+
+
+// @desc    Update password
+// @route   Put /api/v1/aut/updatepassword
+// @acces   Private 
+exports.updatePassword = asyncHandler(async (req, res, next)=>{
+   const user = await User.findById(req.user.id).select('+password');
+
+   // Current password
+   if(!(await user.matchPassword(req.body.currentPassword))){
+      return next(new ErrorResponse('Password is incorrect', 404));
+   }
+
+   user.password = req.body.newPassword;
+   await user.save();
+
+  sendTokenResponse(user, 200, res);
+});
+
+
 // @desc    Forgot password
-// @desc    Post  /api/v1/auth/forgotpassword
+// @route   Post  /api/v1/auth/forgotpassword
 // @acces   Public
 exports.forgortPassword = asyncHandler(async (req, res, next)=>{
    const user = await User.findOne({ email: req.body.email });
@@ -122,7 +160,7 @@ exports.forgortPassword = asyncHandler(async (req, res, next)=>{
 
 
 // @desc    Reset Password
-// @desc    PUT /api/v1/auth/resetpassword/:resettoken
+// @route   PUT /api/v1/auth/resetpassword/:resettoken
 // @acces   Public 
 exports.resetPassword = asyncHandler(async (req, res, next)=>{
    // Get hashed token

@@ -4,10 +4,10 @@ const Course = require('../models/Course');
 const Bootcamp = require('../models/Bootcamp');
 
 
-// @desc    Get     courses
-// @desc    Get     /api/v1/courses
-// @desc    Get     /api/v1/bootcamps/:bootcampId/courses
-// @acces           Public
+// @desc    Get courses
+// @route    Get /api/v1/courses
+// @route    Get /api/v1/bootcamps/:bootcampId/courses
+// @acces    Public
 exports.getCourses = asyncHandler (async(req, res, next) => {
     if(req.params.bootcampId){
         const courses = await Course.find({bootcamp: req.params.bootcampId});
@@ -23,9 +23,9 @@ exports.getCourses = asyncHandler (async(req, res, next) => {
 });
 
 
-// @desc    Get    Single course
-// @desc    Get     /api/v1/courses/:id
-// @acces           Public
+// @desc    Get Single course
+// @route   Get /api/v1/courses/:id
+// @acces   Public
 exports.getCourse = asyncHandler (async(req, res, next) => {
    const course = await Course.findById(req.params.id).populate({
     path: 'bootcamp',
@@ -45,9 +45,9 @@ exports.getCourse = asyncHandler (async(req, res, next) => {
 });
 
 
-// @desc    Add/Create     course
-// @desc    Post     /api/v1/bootcamps/:bootcampId/courses
-// @acces           Private
+// @desc    Add/Create course
+// @desc    Post /api/v1/bootcamps/:bootcampId/courses
+// @acces   Private
 exports.addCourse = asyncHandler (async(req, res, next) => {
     req.body.bootcamp = req.params.bootcampId;
     req.body.user = req.user.id;
@@ -74,9 +74,9 @@ exports.addCourse = asyncHandler (async(req, res, next) => {
  });
 
 
-// @desc    update     course
-// @desc    Put     /api/v1/courses/:id
-// @acces           Private
+// @desc    update course
+// @route   Put /api/v1/courses/:id
+// @acces   Private
 exports.updateCourse = asyncHandler (async(req, res, next) => {
     let course = await Course.findById(req.params.id);
  
@@ -104,9 +104,9 @@ exports.updateCourse = asyncHandler (async(req, res, next) => {
  });
 
 
-// @desc    Delete     course
-// @desc    Delete     /api/v1/courses/:id
-// @acces           Private
+// @desc    Delete    course
+// @route   Delete    /api/v1/courses/:id
+// @acces   Private
 exports.deleteteCourse = asyncHandler (async(req, res, next) => {
 
     const course = await Course.findById(req.params.id);

@@ -83,9 +83,9 @@ exports.updateBootcamp = asyncHandler (async(req, res, next)=>{
 });
 
 
-// @desc    Delete    Delete new bootcamp
-// @route   Delete   /api/v1/bootcamps/:id
-// @acces          Private   
+// @desc    Delete Delete new bootcamp
+// @route   Delete /api/v1/bootcamps/:id
+// @acces   Private   
 exports.deleteBootcamp = asyncHandler(async(req, res, next)=>{ 
    
     const bootcamp = await Bootcamp.findById(req.params.id);
@@ -106,9 +106,9 @@ exports.deleteBootcamp = asyncHandler(async(req, res, next)=>{
     
 });
 
-// @desc      Get bootcamp within a radius
-// @route    Get  /api/v1/bootcamps/radius/:zipcode/:distance
-// @acces          Private   
+// @desc     Get bootcamp within a radius
+// @route    Get /api/v1/bootcamps/radius/:zipcode/:distance
+// @acces    Private   
 exports.getBootcampsInRadius = asyncHandler(async(req, res, next)=>{ 
    const {zipcode, distance } = req.params;
 
@@ -138,9 +138,9 @@ exports.getBootcampsInRadius = asyncHandler(async(req, res, next)=>{
 
 
 
-// @desc    upload    Photo for bootcamp
-// @route   Put   /api/v1/bootcamps/:id/photo
-// @acces          Private   
+// @desc    upload Photo for bootcamp
+// @route   Put /api/v1/bootcamps/:id/photo
+// @acces   Private   
 exports.bootcampPhotoUpload = asyncHandler(async(req, res, next)=>{ 
    
     const bootcamp = await Bootcamp.findById(req.params.id);
