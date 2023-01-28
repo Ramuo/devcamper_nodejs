@@ -54,6 +54,45 @@ exports.login = asyncHandler (async(req, res, next)=>{
 });
 
 
+
+// @desc    Get      current logged in user
+// @desc    Get     /api/v1/auth/me
+// @acces           Private 
+exports.getMe = asyncHandler(async (req, res, next)=>{
+   const user = await User.findById(req.user.id);
+
+
+   res.status(200).json({
+      success: true,
+      data: user
+   });
+});
+
+// @desc    Forgot password
+// @desc    Post  /api/v1/auth/forgotpassword
+// @acces   Public
+exports.forgortPassword = asyncHandler(async (req, res, next)=>{
+   const user = await User.findOne({email: req.body.email});
+
+
+   if(!user){
+      return next(new ErrorResponse('There is no user with that email', 404))
+   }
+
+   // Get reset token 
+   const resetToken = user.getResetTokenPassword();
+
+   await user.save({validateBeforeSave: false});
+
+
+   res.status(200).json({
+      success: true,
+      data: user
+   });
+});
+
+
+
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
    // Create token
@@ -75,18 +114,5 @@ if(process.env.NODE_ENV === 'production'){
          success: true,
          token
       });
-} 
+};
 
-
-// @desc    Get      current logged in user
-// @desc    Get     /api/v1/auth/me
-// @acces           Private 
-exports.getMe = asyncHandler(async (req, res, next)=>{
-   const user = await User.findById(req.user.id);
-
-
-   res.status(200).json({
-      success: true,
-      data: user
-   });
-});
