@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const User = require('../models/User');
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
@@ -69,16 +70,16 @@ exports.getMe = asyncHandler(async (req, res, next)=>{
    });
 });
 
+
 // @desc    Forgot password
 // @desc    Post  /api/v1/auth/forgotpassword
 // @acces   Public
 exports.forgortPassword = asyncHandler(async (req, res, next)=>{
-   const user = await User.findOne({email: req.body.email});
+   const user = await User.findOne({ email: req.body.email });
 
-
-   if(!user){
-      return next(new ErrorResponse('There is no user with that email', 404))
-   }
+   if (!user) {
+      return next(new ErrorResponse('There is no user with that email', 404));
+    }
 
    // Get reset token 
    const resetToken = user.getResetTokenPassword();
@@ -86,7 +87,9 @@ exports.forgortPassword = asyncHandler(async (req, res, next)=>{
    await user.save({validateBeforeSave: false}); 
 
    // Create reset url
-   const resetUrl = `${req.protocole}://${req.get('host')}/api/v1/resetpassword/${resetToken}`;
+   const resetUrl = `${req.protocole}://${req.get(
+      'host'
+      )}/api/v1/auth/resetpassword/${resetToken}`;
 
    const message = `You are receiving this email because you need to confirm your email address. Please make a GET request to: \n\n ${resetUrl}`;
 
@@ -115,6 +118,36 @@ exports.forgortPassword = asyncHandler(async (req, res, next)=>{
       success: true,
       data: user
    });
+});
+
+
+// @desc    Reset Password
+// @desc    PUT /api/v1/auth/resetpassword/:resettoken
+// @acces   Public 
+exports.resetPassword = asyncHandler(async (req, res, next)=>{
+   // Get hashed token
+   const resetPasswordToken =  crypto
+      .createHash('sha256')
+      .update(req.params.resettoken)
+      .digest('hex');
+
+   const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: {$gt: Date.now()}
+   });
+
+   if(!user){
+      return next(new ErrorResponse('Invalide token'), 400);
+
+   }
+   // Set new password 
+   user.password =req.body.password;
+   user.resetPasswordToken = undefined;
+   user.resetPasswordExpire =  undefined;
+
+   await user.save();
+
+   sendTokenResponse(user, 200, res);
 });
 
 
