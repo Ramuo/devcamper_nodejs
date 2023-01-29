@@ -5,8 +5,8 @@ const Bootcamp = require('../models/Bootcamp');
 
 
 // @desc    Get courses
-// @route    Get /api/v1/courses
-// @route    Get /api/v1/bootcamps/:bootcampId/courses
+// @route    GET /api/v1/courses
+// @route    GET /api/v1/bootcamps/:bootcampId/courses
 // @acces    Public
 exports.getCourses = asyncHandler (async(req, res, next) => {
     if(req.params.bootcampId){
@@ -24,7 +24,7 @@ exports.getCourses = asyncHandler (async(req, res, next) => {
 
 
 // @desc    Get Single course
-// @route   Get /api/v1/courses/:id
+// @route   GET /api/v1/courses/:id
 // @acces   Public
 exports.getCourse = asyncHandler (async(req, res, next) => {
    const course = await Course.findById(req.params.id).populate({
@@ -46,7 +46,7 @@ exports.getCourse = asyncHandler (async(req, res, next) => {
 
 
 // @desc    Add/Create course
-// @desc    Post /api/v1/bootcamps/:bootcampId/courses
+// @desc    POST /api/v1/bootcamps/:bootcampId/courses
 // @acces   Private
 exports.addCourse = asyncHandler (async(req, res, next) => {
     req.body.bootcamp = req.params.bootcampId;
@@ -75,7 +75,7 @@ exports.addCourse = asyncHandler (async(req, res, next) => {
 
 
 // @desc    update course
-// @route   Put /api/v1/courses/:id
+// @route   PUT /api/v1/courses/:id
 // @acces   Private
 exports.updateCourse = asyncHandler (async(req, res, next) => {
     let course = await Course.findById(req.params.id);
